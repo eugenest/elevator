@@ -4,17 +4,13 @@ const initialState = {
 };
 
 const elevator = (state = initialState, action) => {
-  // console.log('elevator', state, action);
+  console.log('elevator', state, action);
 
   switch (action.type) {
-    case 'OPEN_FORM':
+    case 'SET_FLOOR':
       return {
-        currentFloor: 2,
-        clickCount: state.clickCount + 1,
-      };
-    case 'CLOSE_FORM':
-      return {
-        isFormOpened: false,
+        currentFloor: action.floor,
+        path: null
       };
     default:
       return state;
