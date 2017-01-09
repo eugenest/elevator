@@ -2,7 +2,7 @@ const initialState = {
   currentFloor: 1,
   isDoorsOpened: false,
   path: [],
-  requests: {
+  requests: { //TODO rewrite with array
     1: {
       isUp: false,
       isDown: false

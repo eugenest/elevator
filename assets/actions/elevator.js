@@ -2,7 +2,6 @@ const actionDelay = 1000;
 
 export const addFloorToPath = (floor) => {
   return (dispatch, getState)  => {
-
     let prevState = getState();
 
     dispatch({
@@ -35,14 +34,15 @@ export const requestElevator = (floor, direction) => {
       isDown: direction == 'down' || prevState.elevator.requests[floor].isDown
     });
 
-    let nextState = getState();
-
-    handleCabinMovement(prevState.elevator.currentFloor, nextState, dispatch, getState);
+    if (!prevState.elevator.path.length) {
+      dispatch(addFloorToPath(floor));
+    }
   };
 };
 
 const handleCabinMovement = (initialFloor, nextState, dispatch, getState) => {
-  // console.log(nextState.elevator.path[0], initialFloor, nextState.elevator.path[0] - initialFloor);
+  console.log(nextState.elevator.path[0], initialFloor, nextState.elevator.path[0] - initialFloor);
+
   let firstTargetFloor = nextState.elevator.path[0];
   let floorsToRide = Math.abs(firstTargetFloor - initialFloor);
 
@@ -93,10 +93,6 @@ const moveOneUp = (dispatch, getState) => {
     });
   });
 };
-
-// triggerDoor(dispatch).then(() => {
-//   dispatch({type: 'FINISH_RIDE'});
-// });
 
 const moveOneDown = (dispatch, getState) => {
   return new Promise(resolve => {
