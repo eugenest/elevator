@@ -12,11 +12,11 @@ export const addFloorToPath = (floor) => {
 
     let nextState = getState();
 
-    handleCabinMovement(prevState.elevator.currentFloor, nextState, dispatch);
+    handleCabinMovement(prevState.elevator.currentFloor, nextState, dispatch, getState);
   };
 };
 
-const handleCabinMovement = (initialFloor, nextState, dispatch) => {
+const handleCabinMovement = (initialFloor, nextState, dispatch, getState) => {
   console.log(nextState.elevator.path[0], initialFloor, nextState.elevator.path[0] - initialFloor);
   let firstTargetFloor = nextState.elevator.path[0];
   let floorsToRide = Math.abs(firstTargetFloor - initialFloor);
@@ -42,7 +42,11 @@ const handleCabinMovement = (initialFloor, nextState, dispatch) => {
       }, Promise.resolve())
       .then(function () {
         triggerDoor(dispatch).then(() => {
-          dispatch({type: 'FINISH_RIDE'});
+          dispatch({type: 'FINISH_SEGMENT'});
+          let updatedState = getState();
+          if (updatedState.elevator.path.length) {
+            handleCabinMovement(updatedState.elevator.currentFloor, updatedState, dispatch, getState);
+          }
         });
       });
     }

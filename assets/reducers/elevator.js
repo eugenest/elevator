@@ -17,6 +17,14 @@ const elevator = (state = initialState, action) => {
         path: []
       });
       break;
+    case 'FINISH_SEGMENT':
+      let segmentFloor = state.path[0];
+      state.path.splice(0, 1);
+      return Object.assign({}, state, {
+        currentFloor: segmentFloor,
+        isDoorsOpened: false,
+      });
+      break;
     case 'MOVE_ONE_UP':
       return Object.assign({}, state, {currentFloor: state.currentFloor + 1});
       break;
