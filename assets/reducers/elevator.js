@@ -12,7 +12,6 @@ const elevator = (state = initialState, action) => {
       return Object.assign({}, state);
     case 'FINISH_RIDE':
       return Object.assign({}, state, {
-        currentFloor: state.path[0],
         isDoorsOpened: false,
         path: []
       });
