@@ -2,10 +2,32 @@ const initialState = {
   currentFloor: 1,
   isDoorsOpened: false,
   path: [],
+  requests: {
+    1: {
+      isUp: false,
+      isDown: false
+    },
+    2: {
+      isUp: false,
+      isDown: false
+    },
+    3: {
+      isUp: false,
+      isDown: false
+    },
+    4: {
+      isUp: false,
+      isDown: false
+    },
+    5: {
+      isUp: false,
+      isDown: false
+    }
+  }
 };
 
 const elevator = (state = initialState, action) => {
-  console.log(action.type)
+  // console.log(action.type)
   switch (action.type) {
     case 'ADD_FLOOR_TO_PATH':
       state.path.push(action.floor);
@@ -35,6 +57,59 @@ const elevator = (state = initialState, action) => {
       break;
     case 'CLOSE_DOORS':
       return Object.assign({}, state, {isDoorsOpened: false});
+      break;
+    case 'REQUEST_ELEVATOR':
+      // state.requests[action.floor] = {
+      //   isUp: action.isUp,
+      //   isDown: action.isDown
+      // };
+      // let requests = state.requests;
+      return Object.assign({}, state, {requests: { //TODO temp
+        1: {
+          isUp: false,
+          isDown: false
+        },
+        2: {
+          isUp: false,
+          isDown: false
+        },
+        3: {
+          isUp: action.isUp,
+          isDown: action.isDown
+        },
+        4: {
+          isUp: false,
+          isDown: false
+        },
+        5: {
+          isUp: false,
+          isDown: false
+        }
+      }});
+      break;
+    case 'CLEAN_REQUEST':
+      return Object.assign({}, state, {requests: { //TODO temp
+        1: {
+          isUp: false,
+          isDown: false
+        },
+        2: {
+          isUp: false,
+          isDown: false
+        },
+        3: {
+          isUp: action.direction == 'up' ? false : state.requests[3].isUp,
+          isDown: action.direction == 'down' ? false : state.requests[3].isDown
+        },
+        4: {
+          isUp: false,
+          isDown: false
+        },
+        5: {
+          isUp: false,
+          isDown: false
+        }
+      }});
       break;
     default:
       return state;

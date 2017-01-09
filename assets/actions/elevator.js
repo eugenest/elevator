@@ -16,6 +16,31 @@ export const addFloorToPath = (floor) => {
   };
 };
 
+export const requestElevator = (floor, direction) => {
+  return (dispatch, getState)  => {
+    if (!['up', 'down'].includes(direction)) {
+      throw new Error(`Undefined request direction: ${direction}`);
+    }
+
+    let prevState = getState();
+
+    if (!Object.keys(prevState.elevator.requests).includes(String(floor))) {
+      throw new Error(`Invalid floor: ${floor}`);
+    }
+
+    dispatch({
+      type: 'REQUEST_ELEVATOR',
+      floor,
+      isUp: direction == 'up' || prevState.elevator.requests[floor].isUp,
+      isDown: direction == 'down' || prevState.elevator.requests[floor].isDown
+    });
+
+    let nextState = getState();
+
+    handleCabinMovement(prevState.elevator.currentFloor, nextState, dispatch, getState);
+  };
+};
+
 const handleCabinMovement = (initialFloor, nextState, dispatch, getState) => {
   // console.log(nextState.elevator.path[0], initialFloor, nextState.elevator.path[0] - initialFloor);
   let firstTargetFloor = nextState.elevator.path[0];
@@ -30,9 +55,9 @@ const handleCabinMovement = (initialFloor, nextState, dispatch, getState) => {
       let steps = [];
       while (floorsToRide > 0) {
         if (initialFloor < firstTargetFloor) {
-          steps.push(() => moveOneUp(dispatch));
+          steps.push(() => moveOneUp(dispatch, getState));
         } else {
-          steps.push(() => moveOneDown(dispatch));
+          steps.push(() => moveOneDown(dispatch, getState));
         }
         floorsToRide--;
       }
@@ -56,22 +81,50 @@ const handleCabinMovement = (initialFloor, nextState, dispatch, getState) => {
   }
 };
 
-const moveOneUp =(dispatch) => {
+const moveOneUp = (dispatch, getState) => {
   return new Promise(resolve => {
     dispatch({type: 'MOVE_ONE_UP'});
-    setTimeout(() => {
-      resolve();
-    }, actionDelay);
+
+    let currentState = getState();
+    checkForRequests(currentState.elevator.currentFloor, 'up', currentState.elevator.requests, dispatch).then(() => {
+      setTimeout(() => {
+        resolve();
+      }, actionDelay);
+    });
   });
 };
 
-const moveOneDown =(dispatch) => {
+// triggerDoor(dispatch).then(() => {
+//   dispatch({type: 'FINISH_RIDE'});
+// });
+
+const moveOneDown = (dispatch, getState) => {
   return new Promise(resolve => {
     dispatch({type: 'MOVE_ONE_DOWN'});
-    setTimeout(() => {
-      resolve();
-    }, actionDelay);
+
+    let currentState = getState();
+    checkForRequests(currentState.elevator.currentFloor, 'down', currentState.elevator.requests, dispatch).then(() => {
+      setTimeout(() => {
+        resolve();
+      }, actionDelay);
+    });
   });
+};
+
+const checkForRequests = (currentFloor, direction, requests, dispatch) => {
+  if (direction == 'up') {
+    if (requests[String(currentFloor)].isUp) {
+      dispatch({type: 'CLEAN_REQUEST', currentFloor, direction});
+      return triggerDoor(dispatch);
+    }
+  } else if (direction == 'down') {
+    if (requests[String(currentFloor)].isDown) {
+      dispatch({type: 'CLEAN_REQUEST', currentFloor, direction});
+      return triggerDoor(dispatch);
+    }
+  }
+
+  return Promise.resolve();
 };
 
 const openDoor =(dispatch) => {

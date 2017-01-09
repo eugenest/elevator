@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-import { addFloorToPath } from '../actions/elevator';
+import { addFloorToPath, requestElevator } from '../actions/elevator';
 
 export class Elevator extends React.Component {
   render() {
-    console.log(this.props.isDoorsOpened)
+    console.log(this.props.requests[3].isUp, this.props.requests[3].isDown)
     return (
       <div className="flex-row align-center justify-center" style={{ height: '100%' }}>
         <div className={this.props.isDoorsOpened ? "elevator elevator--open" : "elevator"}>
@@ -35,9 +35,9 @@ export class Elevator extends React.Component {
             <div className="elevator__button elevator__button--lg">down</div>
           </div>
           <div className="elevator__panel">
-            <div className="elevator__button elevator__button--lg">up</div>
+            <div className={this.props.requests[3].isUp ? "elevator__button elevator__button--lg active" : "elevator__button elevator__button--lg"} onClick={() => this.props.onClickRequest(3, 'up')}>up</div>
             <br />
-            <div className="elevator__button elevator__button--lg">down</div>
+            <div className={this.props.requests[3].isDown ? "elevator__button elevator__button--lg active" : "elevator__button elevator__button--lg"} onClick={() => this.props.onClickRequest(3, 'down')}>down</div>
           </div>
           <div className="elevator__panel">
             <div className="elevator__button elevator__button--lg">up</div>
@@ -59,7 +59,8 @@ const mapStateToProps = state => {
   return {
     currentFloor: state.elevator.currentFloor,
     isDoorsOpened: state.elevator.isDoorsOpened,
-    path: state.elevator.path
+    path: state.elevator.path,
+    requests: state.elevator.requests
   };
 };
 
@@ -68,7 +69,10 @@ const mapDispatchToProps = (dispatch) => {
   return {
     onClick: (floor) => {
       dispatch(addFloorToPath(floor));
-    }
+    },
+    onClickRequest: (floor, direction) => {
+      dispatch(requestElevator(floor, direction));
+    },
   };
 };
 
