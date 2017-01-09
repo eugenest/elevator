@@ -1,4 +1,4 @@
-import {combineReducers} from 'redux';
+import { combineReducers } from 'redux';
 
 // import panel from './panel.js';
 import elevator from './elevator.js';

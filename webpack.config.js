@@ -17,6 +17,13 @@ module.exports = {
     filename: 'bundle.js'
   },
   module: {
+    preLoaders: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'eslint'
+      },
+    ],
     loaders: [
       {
         test:   /\.scss$/,
@@ -88,5 +95,8 @@ module.exports = {
   ],
   devServer: {
     hot: true,
+  },
+  eslint: {
+    configFile: './.eslintrc'
   }
 };
