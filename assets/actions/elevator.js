@@ -35,7 +35,7 @@ export const requestElevator = (floor, direction) => {
     });
 
     if (!prevState.elevator.path.length) {
-      dispatch(addFloorToPath(floor));
+      dispatch(addFloorToPath(floor)); //TODO double door opening on finish
     }
   };
 };
@@ -72,6 +72,7 @@ const handleCabinMovement = (initialFloor, nextState, dispatch, getState) => {
 
           if (updatedState.elevator.path.length) {
             handleCabinMovement(updatedState.elevator.currentFloor, updatedState, dispatch, getState);
+            //TODO check somewhere here requests. Before that rewrite requests from objects to arrays
           } else {
             dispatch({type: 'FINISH_RIDE'});
           }
