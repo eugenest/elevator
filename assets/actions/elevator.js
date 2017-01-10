@@ -31,7 +31,7 @@ export const requestElevator = (floor, direction) => {
     });
 
     if (!prevState.elevator.path.length) {
-      dispatch(addFloorToPath(floor)); //TODO double door opening on finish
+      dispatch(addFloorToPath(floor));
     }
   };
 };
@@ -47,9 +47,9 @@ const handleCabinMovement = (initialFloor, nextState, dispatch, getState) => {
     while (floorsToRide > 0) {
       if (initialFloor == firstTargetFloor) {
         steps.push(() => {
-          return triggerDoor(dispatch).then(() => {
+          // return triggerDoor(dispatch).then(() => {
             dispatch({type: 'CLEAN_PATH_ITEM', currentFloor: firstTargetFloor});
-          });
+          // });
         });
       } else if (initialFloor < firstTargetFloor) {
         steps.push(() => moveOneUp(dispatch, getState));
@@ -132,12 +132,12 @@ const checkForRequests = (currentFloor, direction, requests, dispatch) => {
   if (direction == 'up') {
     if (requests.some(item => (item.floor == currentFloor && item.isUp))) {
       dispatch({type: 'CLEAN_REQUEST', currentFloor, direction});
-      return triggerDoor(dispatch);
+      return Promise.resolve();
     }
   } else if (direction == 'down') {
     if (requests.some(item => (item.floor == currentFloor && item.isDown))) {
       dispatch({type: 'CLEAN_REQUEST', currentFloor, direction});
-      return triggerDoor(dispatch);
+      return Promise.resolve();
     }
   }
 
