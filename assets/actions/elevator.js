@@ -37,44 +37,42 @@ export const requestElevator = (floor, direction) => {
 };
 
 const handleCabinMovement = (initialFloor, nextState, dispatch, getState) => {
-  console.log(nextState.elevator.path[0], initialFloor, nextState.elevator.path[0] - initialFloor);
+  console.log(initialFloor, nextState.elevator.path[0], nextState.elevator.path[0] - initialFloor);
 
   let firstTargetFloor = nextState.elevator.path[0];
   let floorsToRide = Math.abs(firstTargetFloor - initialFloor);
 
-  if (nextState.elevator.path.length == 1) {
-    if (firstTargetFloor == initialFloor) {
-      triggerDoor(dispatch).then(() => {
-        dispatch({type: 'FINISH_RIDE'});
-      });
-    } else if (floorsToRide >= 1) {
-      let steps = [];
-      while (floorsToRide > 0) {
-        if (initialFloor < firstTargetFloor) {
-          steps.push(() => moveOneUp(dispatch, getState));
-        } else {
-          steps.push(() => moveOneDown(dispatch, getState));
-        }
-        floorsToRide--;
-      }
-
-      steps.reduce(function (prev, curr) {
-        return prev.then(curr);
-      }, Promise.resolve())
-      .then(function () {
-        triggerDoor(dispatch).then(() => {
-          dispatch({type: 'FINISH_SEGMENT'});
-          let updatedState = getState();
-
-          if (updatedState.elevator.path.length) {
-            handleCabinMovement(updatedState.elevator.currentFloor, updatedState, dispatch, getState);
-            //TODO check somewhere here requests. Before that rewrite requests from objects to arrays
-          } else {
-            dispatch({type: 'FINISH_RIDE'});
-          }
+  if (!nextState.elevator.isMoving) {
+    let steps = [];
+    while (floorsToRide > 0) {
+      if (initialFloor == firstTargetFloor) {
+        steps.push(() => {
+          return triggerDoor(dispatch).then(() => {
+            dispatch({type: 'CLEAN_PATH_ITEM', currentFloor: firstTargetFloor});
+          });
         });
-      });
+      } else if (initialFloor < firstTargetFloor) {
+        steps.push(() => moveOneUp(dispatch, getState));
+      } else {
+        steps.push(() => moveOneDown(dispatch, getState));
+      }
+      floorsToRide--;
     }
+
+    steps.reduce(function (prev, curr) {
+      return prev.then(curr);
+    }, Promise.resolve())
+    .then(function () {
+      triggerDoor(dispatch).then(() => {
+        dispatch({type: 'FINISH_SEGMENT'});
+        let updatedState = getState();
+
+        if (updatedState.elevator.path.length) {
+          handleCabinMovement(updatedState.elevator.currentFloor, updatedState, dispatch, getState);
+          //TODO check requests
+        }
+      });
+    });
   }
 };
 
@@ -100,7 +98,7 @@ const moveOneDown = (dispatch, getState) => {
     dispatch({type: 'MOVE_ONE_DOWN'});
 
     let currentState = getState();
-    checkForPathIntersections(currentState.elevator.currentFloor, 'up', currentState.elevator.path, dispatch)
+    checkForPathIntersections(currentState.elevator.currentFloor, 'down', currentState.elevator.path, dispatch)
       .then(() => {
         return checkForRequests(currentState.elevator.currentFloor, 'down', currentState.elevator.requests, dispatch)
       })
@@ -126,17 +124,18 @@ const checkForPathIntersections = (currentFloor, direction, path, dispatch) => {
       }
     }
   }
+
   return Promise.resolve();
 };
 
 const checkForRequests = (currentFloor, direction, requests, dispatch) => {
   if (direction == 'up') {
-    if (requests.some(item => item.floor && item.isUp)) {
+    if (requests.some(item => (item.floor == currentFloor && item.isUp))) {
       dispatch({type: 'CLEAN_REQUEST', currentFloor, direction});
       return triggerDoor(dispatch);
     }
   } else if (direction == 'down') {
-    if (requests.some(item => item.floor && item.isDown)) {
+    if (requests.some(item => (item.floor == currentFloor && item.isDown))) {
       dispatch({type: 'CLEAN_REQUEST', currentFloor, direction});
       return triggerDoor(dispatch);
     }
