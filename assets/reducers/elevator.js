@@ -32,12 +32,13 @@ const elevator = (state = initialState, action) => {
     case 'CLOSE_DOORS':
       return Object.assign({}, state, {isDoorsOpened: false, isMoving: true});
     case 'REQUEST_ELEVATOR':
-      state.requests.push({
+      var requests = JSON.parse(JSON.stringify(state.requests));
+      requests.push({
         floor: action.floor,
         isUp: action.isUp,
         isDown: action.isDown
       });
-      return Object.assign({}, state);
+      return Object.assign({}, state, {requests});
     case 'CLEAN_REQUEST':
       let targetIsUp = action.direction == 'up';
       let targetIsDown = action.direction == 'down';
@@ -45,7 +46,10 @@ const elevator = (state = initialState, action) => {
       var requests = JSON.parse(JSON.stringify(state.requests));
 
       for (let i = 0; i < requests.length; i++) {
-        if (requests[i].floor == action.floor) {
+        if (requests[i].floor == action.currentFloor) {
+
+          console.log(requests[i], action.direction);
+
           if (targetIsUp == requests[i].isUp) {
             requests.splice(i, 1);
             break;
@@ -57,9 +61,10 @@ const elevator = (state = initialState, action) => {
           }
         }
       }
+
       // let position = state.requests.map(function(e) { return e.hello; }).indexOf('stevie');
       // state.requests.splice(position, 1);
-      return Object.assign({}, state, {requests: []});
+      return Object.assign({}, state, {requests});
     case 'CLEAN_PATH_ITEM':
       var path = JSON.parse(JSON.stringify(state.path));
       path.splice(state.path.indexOf(action.currentFloor), 1);
