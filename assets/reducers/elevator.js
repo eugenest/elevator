@@ -14,14 +14,9 @@ const elevator = (state = initialState, action) => {
       path.push(action.floor);
       return Object.assign({}, state, {path});
     case 'FINISH_SEGMENT':
-      let segmentFloor = state.path[0];
-      var path = JSON.parse(JSON.stringify(state.path));
-      path.splice(0, 1);
       return Object.assign({}, state, {
-        currentFloor: segmentFloor,
         isDoorsOpened: false,
         isMoving: false,
-        path
       });
     case 'MOVE_ONE_UP':
       return Object.assign({}, state, {currentFloor: state.currentFloor + 1, isMoving: true});
@@ -62,12 +57,12 @@ const elevator = (state = initialState, action) => {
         }
       }
 
-      // let position = state.requests.map(function(e) { return e.hello; }).indexOf('stevie');
-      // state.requests.splice(position, 1);
       return Object.assign({}, state, {requests});
     case 'CLEAN_PATH_ITEM':
       var path = JSON.parse(JSON.stringify(state.path));
+      console.log('b', path)
       path.splice(state.path.indexOf(action.currentFloor), 1);
+      console.log('a', path)
       return Object.assign({}, state, {path});
     default:
       return state;

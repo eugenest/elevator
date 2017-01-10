@@ -54,9 +54,9 @@ const handleCabinMovement = (initialFloor, nextState, dispatch, getState) => {
           })
         });
       } else if (initialFloor < firstTargetFloor) {
-        steps.push(() => moveOneUp(dispatch, getState));
+        steps.push(() => moveOne('up', dispatch, getState));
       } else {
-        steps.push(() => moveOneDown(dispatch, getState));
+        steps.push(() => moveOne('down', dispatch, getState));
       }
       floorsToRide--;
     }
@@ -68,7 +68,7 @@ const handleCabinMovement = (initialFloor, nextState, dispatch, getState) => {
       // triggerDoor(dispatch).then(() => {
         dispatch({type: 'FINISH_SEGMENT'});
         let updatedState = getState();
-
+        console.log('next segment', updatedState.elevator.currentFloor, updatedState)
         if (updatedState.elevator.path.length) {
           handleCabinMovement(updatedState.elevator.currentFloor, updatedState, dispatch, getState);
           //TODO check requests
@@ -78,14 +78,14 @@ const handleCabinMovement = (initialFloor, nextState, dispatch, getState) => {
   }
 };
 
-const moveOneUp = (dispatch, getState) => {
+const moveOne = (direction, dispatch, getState) => {
   return new Promise(resolve => {
-    dispatch({type: 'MOVE_ONE_UP'});
+    dispatch({type: direction == 'up' ? 'MOVE_ONE_UP' : 'MOVE_ONE_DOWN'});
 
     let currentState = getState();
-    checkForPathIntersections(currentState.elevator.currentFloor, 'up', currentState.elevator.path, dispatch)
+    checkForPathIntersections(currentState.elevator.currentFloor, direction, currentState.elevator.path, dispatch)
       .then(() => {
-        return checkForRequests(currentState.elevator.currentFloor, 'up', currentState.elevator.requests, dispatch)
+        return checkForRequests(currentState.elevator.currentFloor, direction, currentState.elevator.requests, dispatch)
       })
       .then(() => {
         setTimeout(() => {
@@ -95,25 +95,8 @@ const moveOneUp = (dispatch, getState) => {
   });
 };
 
-const moveOneDown = (dispatch, getState) => {
-  return new Promise(resolve => {
-    dispatch({type: 'MOVE_ONE_DOWN'});
-
-    let currentState = getState();
-    checkForPathIntersections(currentState.elevator.currentFloor, 'down', currentState.elevator.path, dispatch)
-      .then(() => {
-        return checkForRequests(currentState.elevator.currentFloor, 'down', currentState.elevator.requests, dispatch)
-      })
-      .then(() => {
-        setTimeout(() => {
-          resolve();
-        }, actionDelay);
-    });
-  });
-};
-
 const checkForPathIntersections = (currentFloor, direction, path, dispatch) => {
-  console.log(currentFloor, path, direction, path.includes(currentFloor) && path[0] >= currentFloor)
+  // console.log(currentFloor, path, direction, path.includes(currentFloor) && path[0] >= currentFloor)
   if (path.length >= 1) {
     if (direction == 'up') {
       if (path.includes(currentFloor) && path[0] >= currentFloor) {
