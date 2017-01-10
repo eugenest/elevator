@@ -3,11 +3,11 @@ const initialState = {
   isDoorsOpened: false,
   isMoving: false,
   path: [],
-  requests: []
+  requests: [],
 };
 
 const elevator = (state = initialState, action) => {
-  console.log(action.type)
+  console.log(action.type);
   switch (action.type) {
     case 'ADD_FLOOR_TO_PATH':
       let path = state.path;
@@ -19,11 +19,21 @@ const elevator = (state = initialState, action) => {
         isMoving: false,
       });
     case 'MOVE_ONE_UP':
-      return Object.assign({}, state, {currentFloor: state.currentFloor + 1, isMoving: true});
+      return Object.assign({}, state, {
+        currentFloor: state.currentFloor + 1,
+        isMoving: true,
+      });
     case 'MOVE_ONE_DOWN':
-      return Object.assign({}, state, {currentFloor: state.currentFloor - 1, isMoving: true});
+      return Object.assign({}, state, {
+        currentFloor:
+        state.currentFloor - 1,
+        isMoving: true,
+      });
     case 'OPEN_DOORS':
-      return Object.assign({}, state, {isDoorsOpened: true, isMoving: true});
+      return Object.assign({}, state, {
+        isDoorsOpened: true,
+        isMoving: true,
+      });
     case 'CLOSE_DOORS':
       return Object.assign({}, state, {isDoorsOpened: false, isMoving: true});
     case 'REQUEST_ELEVATOR':
@@ -31,7 +41,7 @@ const elevator = (state = initialState, action) => {
       requests.push({
         floor: action.floor,
         isUp: action.isUp,
-        isDown: action.isDown
+        isDown: action.isDown,
       });
       return Object.assign({}, state, {requests});
     case 'CLEAN_REQUEST':
@@ -41,28 +51,16 @@ const elevator = (state = initialState, action) => {
       var requests = JSON.parse(JSON.stringify(state.requests));
 
       for (let i = 0; i < requests.length; i++) {
+        console.log(requests[i].floor, action.currentFloor);
         if (requests[i].floor == action.currentFloor) {
-
-          console.log(requests[i], action.direction);
-
-          if (targetIsUp == requests[i].isUp) {
-            requests.splice(i, 1);
-            break;
-          }
-
-          if (targetIsDown == requests[i].isDown) {
-            requests.splice(i, 1);
-            break;
-          }
+          requests.splice(i, 1);
         }
       }
 
       return Object.assign({}, state, {requests});
     case 'CLEAN_PATH_ITEM':
       var path = JSON.parse(JSON.stringify(state.path));
-      console.log('b', path)
       path.splice(state.path.indexOf(action.currentFloor), 1);
-      console.log('a', path)
       return Object.assign({}, state, {path});
     default:
       return state;

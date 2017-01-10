@@ -15,3 +15,6 @@ rules:
   react/prop-types: 1
   react/react-in-jsx-scope: 0
   react/jsx-filename-extension: 0
+  eqeqeq: 0
+  object-curly-spacing: 0
+  no-case-declarations: 0
