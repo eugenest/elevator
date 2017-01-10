@@ -5,7 +5,17 @@ import { addFloorToPath, requestElevator } from '../actions/elevator';
 
 export class Elevator extends React.Component {
   render() {
-    console.log(this.props.requests[3].isUp, this.props.requests[3].isDown)
+    // console.log(this.props.requests)
+    let floorButtons = [];
+    for (let i = Elevator.floorsCount; i >= 1; i--) {
+      floorButtons.push(
+        <div className="elevator__panel" key={i}>
+          <div className={this.props.requests.some((item) => {return item && item.floor == i && item.isUp}) ? "elevator__button elevator__button--lg active" : "elevator__button elevator__button--lg"} onClick={() => this.props.onClickRequest(i, 'up')}>up</div>
+          <br />
+          <div className={this.props.requests.some((item) => {return item && item.floor == i && item.isDown}) ? "elevator__button elevator__button--lg active" : "elevator__button elevator__button--lg"} onClick={() => this.props.onClickRequest(i, 'down')}>down</div>
+        </div>
+        );
+    }
     return (
       <div className="flex-row align-center justify-center" style={{ height: '100%' }}>
         <div className={this.props.isDoorsOpened ? "elevator elevator--open" : "elevator"}>
@@ -24,36 +34,14 @@ export class Elevator extends React.Component {
           <div className={this.props.path.includes(2) ? "elevator__button active" : "elevator__button"} onClick={() => this.props.onClick(2)}>2</div>
         </div>
         <div className="elevator__floors">
-          <div className="elevator__panel">
-            <div className="elevator__button elevator__button--lg">up</div>
-            <br />
-            <div className="elevator__button elevator__button--lg">down</div>
-          </div>
-          <div className="elevator__panel">
-            <div className="elevator__button elevator__button--lg">up</div>
-            <br />
-            <div className="elevator__button elevator__button--lg">down</div>
-          </div>
-          <div className="elevator__panel">
-            <div className={this.props.requests[3].isUp ? "elevator__button elevator__button--lg active" : "elevator__button elevator__button--lg"} onClick={() => this.props.onClickRequest(3, 'up')}>up</div>
-            <br />
-            <div className={this.props.requests[3].isDown ? "elevator__button elevator__button--lg active" : "elevator__button elevator__button--lg"} onClick={() => this.props.onClickRequest(3, 'down')}>down</div>
-          </div>
-          <div className="elevator__panel">
-            <div className="elevator__button elevator__button--lg">up</div>
-            <br />
-            <div className="elevator__button elevator__button--lg">down</div>
-          </div>
-          <div className="elevator__panel">
-            <div className="elevator__button elevator__button--lg">up</div>
-            <br />
-            <div className="elevator__button elevator__button--lg">down</div>
-          </div>
+          {floorButtons}
         </div>
       </div>
     );
   }
 }
+
+Elevator.floorsCount = 5;
 
 const mapStateToProps = state => {
   return {

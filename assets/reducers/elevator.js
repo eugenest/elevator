@@ -2,28 +2,7 @@ const initialState = {
   currentFloor: 1,
   isDoorsOpened: false,
   path: [],
-  requests: { //TODO rewrite with array
-    1: {
-      isUp: false,
-      isDown: false
-    },
-    2: {
-      isUp: false,
-      isDown: false
-    },
-    3: {
-      isUp: false,
-      isDown: false
-    },
-    4: {
-      isUp: false,
-      isDown: false
-    },
-    5: {
-      isUp: false,
-      isDown: false
-    }
-  }
+  requests: []
 };
 
 const elevator = (state = initialState, action) => {
@@ -37,7 +16,6 @@ const elevator = (state = initialState, action) => {
         isDoorsOpened: false,
         path: []
       });
-      break;
     case 'FINISH_SEGMENT':
       let segmentFloor = state.path[0];
       state.path.splice(0, 1);
@@ -45,72 +23,44 @@ const elevator = (state = initialState, action) => {
         currentFloor: segmentFloor,
         isDoorsOpened: false,
       });
-      break;
     case 'MOVE_ONE_UP':
       return Object.assign({}, state, {currentFloor: state.currentFloor + 1});
-      break;
     case 'MOVE_ONE_DOWN':
       return Object.assign({}, state, {currentFloor: state.currentFloor - 1});
-      break;
     case 'OPEN_DOORS':
       return Object.assign({}, state, {isDoorsOpened: true});
-      break;
     case 'CLOSE_DOORS':
       return Object.assign({}, state, {isDoorsOpened: false});
-      break;
     case 'REQUEST_ELEVATOR':
-      // state.requests[action.floor] = {
-      //   isUp: action.isUp,
-      //   isDown: action.isDown
-      // };
-      // let requests = state.requests;
-      return Object.assign({}, state, {requests: { //TODO temp
-        1: {
-          isUp: false,
-          isDown: false
-        },
-        2: {
-          isUp: false,
-          isDown: false
-        },
-        3: {
-          isUp: action.isUp,
-          isDown: action.isDown
-        },
-        4: {
-          isUp: false,
-          isDown: false
-        },
-        5: {
-          isUp: false,
-          isDown: false
-        }
-      }});
-      break;
+      state.requests.push({
+        floor: action.floor,
+        isUp: action.isUp,
+        isDown: action.isDown
+      });
+      return Object.assign({}, state);
     case 'CLEAN_REQUEST':
-      return Object.assign({}, state, {requests: { //TODO temp
-        1: {
-          isUp: false,
-          isDown: false
-        },
-        2: {
-          isUp: false,
-          isDown: false
-        },
-        3: {
-          isUp: action.direction == 'up' ? false : state.requests[3].isUp,
-          isDown: action.direction == 'down' ? false : state.requests[3].isDown
-        },
-        4: {
-          isUp: false,
-          isDown: false
-        },
-        5: {
-          isUp: false,
-          isDown: false
+      let targetIsUp = action.direction == 'up';
+      let targetIsDown = action.direction == 'down';
+      /*for (let i = 0; i < state.requests.length; i++) {
+        if (state.requests[i].floor == action.floor) {
+          if (targetIsUp == state.requests[i].isUp) {
+            state.requests.splice(i, 1);
+            break;
+          }
+
+          if (targetIsDown == state.requests[i].isDown) {
+            state.requests.splice(i, 1);
+            break;
+          }
         }
-      }});
-      break;
+      }*/
+      // let position = state.requests.map(function(e) { return e.hello; }).indexOf('stevie');
+      // state.requests.splice(position, 1);
+      return Object.assign({}, state, {requests: []});
+    case 'CLEAN_PATH_ITEM':
+      console.log(123)
+      state.path.splice(state.path.indexOf(action), 1);
+      return Object.assign({}, state, {requests: []});
     default:
       return state;
   }

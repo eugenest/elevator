@@ -98,5 +98,6 @@ module.exports = {
   },
   eslint: {
     configFile: './.eslintrc'
-  }
+  },
+  devtool: 'source-map'
 };

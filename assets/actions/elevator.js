@@ -23,15 +23,11 @@ export const requestElevator = (floor, direction) => {
 
     let prevState = getState();
 
-    if (!Object.keys(prevState.elevator.requests).includes(String(floor))) {
-      throw new Error(`Invalid floor: ${floor}`);
-    }
-
     dispatch({
       type: 'REQUEST_ELEVATOR',
       floor,
-      isUp: direction == 'up' || prevState.elevator.requests[floor].isUp,
-      isDown: direction == 'down' || prevState.elevator.requests[floor].isDown
+      isUp: direction == 'up',
+      isDown: direction == 'down'
     });
 
     if (!prevState.elevator.path.length) {
@@ -87,11 +83,15 @@ const moveOneUp = (dispatch, getState) => {
     dispatch({type: 'MOVE_ONE_UP'});
 
     let currentState = getState();
-    checkForRequests(currentState.elevator.currentFloor, 'up', currentState.elevator.requests, dispatch).then(() => {
-      setTimeout(() => {
-        resolve();
-      }, actionDelay);
-    });
+    checkForPathIntersections(currentState.elevator.currentFloor, 'up', currentState.elevator.path, dispatch)
+      .then(() => {
+        return checkForRequests(currentState.elevator.currentFloor, 'up', currentState.elevator.requests, dispatch)
+      })
+      .then(() => {
+        setTimeout(() => {
+          resolve();
+        }, actionDelay);
+      });
   });
 };
 
@@ -100,22 +100,44 @@ const moveOneDown = (dispatch, getState) => {
     dispatch({type: 'MOVE_ONE_DOWN'});
 
     let currentState = getState();
-    checkForRequests(currentState.elevator.currentFloor, 'down', currentState.elevator.requests, dispatch).then(() => {
-      setTimeout(() => {
-        resolve();
-      }, actionDelay);
+    checkForPathIntersections(currentState.elevator.currentFloor, 'up', currentState.elevator.path, dispatch)
+      .then(() => {
+        return checkForRequests(currentState.elevator.currentFloor, 'down', currentState.elevator.requests, dispatch)
+      })
+      .then(() => {
+        setTimeout(() => {
+          resolve();
+        }, actionDelay);
     });
   });
 };
 
+const checkForPathIntersections = (currentFloor, direction, path, dispatch) => {
+  console.log(currentFloor, direction, path)
+  if (path.length > 1) {
+    if (direction == 'up') {
+      if (path.includes(currentFloor)/* && path[0] > currentFloor*/ ) {
+        dispatch({type: 'CLEAN_PATH_ITEM', currentFloor});
+        return triggerDoor(dispatch);
+      }
+    } else if (direction == 'down') {
+      if (path.includes(currentFloor)/* && path[0] < currentFloor*/) {
+        dispatch({type: 'CLEAN_PATH_ITEM', currentFloor});
+        return triggerDoor(dispatch);
+      }
+    }
+  }
+  return Promise.resolve();
+};
+
 const checkForRequests = (currentFloor, direction, requests, dispatch) => {
   if (direction == 'up') {
-    if (requests[String(currentFloor)].isUp) {
+    if (requests.some(item => item.floor && item.isUp)) {
       dispatch({type: 'CLEAN_REQUEST', currentFloor, direction});
       return triggerDoor(dispatch);
     }
   } else if (direction == 'down') {
-    if (requests[String(currentFloor)].isDown) {
+    if (requests.some(item => item.floor && item.isDown)) {
       dispatch({type: 'CLEAN_REQUEST', currentFloor, direction});
       return triggerDoor(dispatch);
     }
