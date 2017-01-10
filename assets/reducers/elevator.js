@@ -6,7 +6,7 @@ const initialState = {
 };
 
 const elevator = (state = initialState, action) => {
-  // console.log(action.type)
+  console.log(action.type)
   switch (action.type) {
     case 'ADD_FLOOR_TO_PATH':
       state.path.push(action.floor);
@@ -58,9 +58,8 @@ const elevator = (state = initialState, action) => {
       // state.requests.splice(position, 1);
       return Object.assign({}, state, {requests: []});
     case 'CLEAN_PATH_ITEM':
-      console.log(123)
       state.path.splice(state.path.indexOf(action), 1);
-      return Object.assign({}, state, {requests: []});
+      return Object.assign({}, state);
     default:
       return state;
   }

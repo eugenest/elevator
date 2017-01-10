@@ -113,15 +113,14 @@ const moveOneDown = (dispatch, getState) => {
 };
 
 const checkForPathIntersections = (currentFloor, direction, path, dispatch) => {
-  console.log(currentFloor, direction, path)
   if (path.length > 1) {
     if (direction == 'up') {
-      if (path.includes(currentFloor)/* && path[0] > currentFloor*/ ) {
+      if (path.includes(currentFloor) && path[0] > currentFloor) {
         dispatch({type: 'CLEAN_PATH_ITEM', currentFloor});
         return triggerDoor(dispatch);
       }
     } else if (direction == 'down') {
-      if (path.includes(currentFloor)/* && path[0] < currentFloor*/) {
+      if (path.includes(currentFloor) && path[0] < currentFloor) {
         dispatch({type: 'CLEAN_PATH_ITEM', currentFloor});
         return triggerDoor(dispatch);
       }
