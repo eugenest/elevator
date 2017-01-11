@@ -3,21 +3,18 @@ const actionDelay = 1000;
 const openDoor = dispatch =>
   new Promise(resolve => {
     dispatch({type: 'OPEN_DOORS'});
-    setTimeout(() => {
-      resolve();
-    }, actionDelay);
+    setTimeout(resolve, actionDelay);
   });
 
 const closeDoor = dispatch =>
   new Promise(resolve => {
     dispatch({type: 'CLOSE_DOORS'});
-    setTimeout(() => {
-      resolve();
-    }, actionDelay);
+    setTimeout(resolve, actionDelay);
   });
 
 const triggerDoor = dispatch =>
-  openDoor(dispatch).then(() => closeDoor(dispatch));
+  openDoor(dispatch)
+    .then(() => closeDoor(dispatch));
 
 const checkForPendingActions = (state, direction, dispatch) => {
   let isNeedToTriggerDoor = false;
@@ -32,9 +29,9 @@ const checkForPendingActions = (state, direction, dispatch) => {
   const isFloorExistsInPath = state.path.includes(state.currentFloor);
 
   if (direction == 'up' && isNeedToCleanUpRequest) {
-    dispatch({type: 'CLEAN_REQUEST', currentFloor: state.currentFloor, direction});
+    dispatch({type: 'CLEAN_REQUEST', currentFloor: state.currentFloor});
   } else if (direction == 'down' && isNeedToCleanDownRequest) {
-    dispatch({type: 'CLEAN_REQUEST', currentFloor: state.currentFloor, direction});
+    dispatch({type: 'CLEAN_REQUEST', currentFloor: state.currentFloor});
   }
 
   if (direction == 'up') {
@@ -83,6 +80,7 @@ const handleCabinMovement = (initialFloor, nextState, dispatch, getState) => {
   if (initialFloor == firstTargetFloor) {
     steps.push(() => {
       dispatch({type: 'CLEAN_PATH_ITEM', currentFloor: firstTargetFloor});
+      dispatch({type: 'CLEAN_REQUEST', currentFloor: firstTargetFloor});
       return triggerDoor(dispatch);
     });
   } else {
@@ -96,9 +94,8 @@ const handleCabinMovement = (initialFloor, nextState, dispatch, getState) => {
     }
   }
 
-  steps.reduce((prev, curr) =>
-    prev.then(curr)
-  , Promise.resolve())
+  steps.reduce((previous, current) =>
+    previous.then(current), Promise.resolve())
     .then(() => {
       dispatch({type: 'FINISH_SEGMENT'});
       const updatedState = getState();

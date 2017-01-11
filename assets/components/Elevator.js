@@ -15,6 +15,7 @@ export class Elevator extends React.Component {
         </div>
         );
     }
+
     return (
       <div className="flex-row align-center justify-center" style={{ height: '100%' }}>
         <div className={this.props.isDoorsOpened ? "elevator elevator--open" : "elevator"}>
@@ -58,7 +59,6 @@ const mapStateToProps = state =>
     path: state.elevator.path,
     requests: state.elevator.requests,
   });
-
 
 const mapDispatchToProps = dispatch =>
   ({
