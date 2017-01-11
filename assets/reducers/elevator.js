@@ -45,13 +45,9 @@ const elevator = (state = initialState, action) => {
       });
       return Object.assign({}, state, {requests});
     case 'CLEAN_REQUEST':
-      let targetIsUp = action.direction == 'up';
-      let targetIsDown = action.direction == 'down';
-
       var requests = JSON.parse(JSON.stringify(state.requests));
 
       for (let i = 0; i < requests.length; i++) {
-        console.log(requests[i].floor, action.currentFloor);
         if (requests[i].floor == action.currentFloor) {
           requests.splice(i, 1);
         }

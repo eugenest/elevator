@@ -1,18 +1,17 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 
-import { addFloorToPath, requestElevator } from '../actions/elevator';
+import {addFloorToPath, requestElevator} from '../actions/elevator';
 
 export class Elevator extends React.Component {
   render() {
-    // console.log(this.props.requests)
     let floorButtons = [];
     for (let i = Elevator.floorsCount; i >= 1; i--) {
       floorButtons.push(
         <div className="elevator__panel" key={i}>
-          <div className={this.props.requests.some((item) => {return item && item.floor == i && item.isUp}) ? "elevator__button elevator__button--lg active" : "elevator__button elevator__button--lg"} onClick={() => this.props.onClickRequest(i, 'up')}>up</div>
+          <div className={this.props.requests.some((item) => item && item.floor == i && item.isUp) ? "elevator__button elevator__button--lg active" : "elevator__button elevator__button--lg"} onClick={() => this.props.onClickRequest(i, 'up')}>up</div>
           <br />
-          <div className={this.props.requests.some((item) => {return item && item.floor == i && item.isDown}) ? "elevator__button elevator__button--lg active" : "elevator__button elevator__button--lg"} onClick={() => this.props.onClickRequest(i, 'down')}>down</div>
+          <div className={this.props.requests.some((item) => item && item.floor == i && item.isDown) ? "elevator__button elevator__button--lg active" : "elevator__button elevator__button--lg"} onClick={() => this.props.onClickRequest(i, 'down')}>down</div>
         </div>
         );
     }
@@ -43,26 +42,23 @@ export class Elevator extends React.Component {
 
 Elevator.floorsCount = 5;
 
-const mapStateToProps = state => {
-  return {
+const mapStateToProps = state =>
+  ({
     currentFloor: state.elevator.currentFloor,
     isDoorsOpened: state.elevator.isDoorsOpened,
     path: state.elevator.path,
-    requests: state.elevator.requests
-  };
-};
+    requests: state.elevator.requests,
+  });
 
 
-const mapDispatchToProps = (dispatch) => {
-  return {
+const mapDispatchToProps = dispatch =>
+  ({
     onClick: (floor) => {
       dispatch(addFloorToPath(floor));
     },
     onClickRequest: (floor, direction) => {
       dispatch(requestElevator(floor, direction));
     },
-  };
-};
+  });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Elevator);
-
