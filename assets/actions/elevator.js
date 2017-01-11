@@ -27,6 +27,8 @@ const triggerDoor = dispatch =>
 const checkForPendingActions = (state, direction, dispatch) => {
   let isNeedToTriggerDoor = false;
 
+  const currentTarget = state.path[0];
+
   if (direction == 'up') {
     if (state.requests.some(item => (item.floor == state.currentFloor))) {
       dispatch({type: 'CLEAN_REQUEST', currentFloor: state.currentFloor, direction});
@@ -37,19 +39,19 @@ const checkForPendingActions = (state, direction, dispatch) => {
     }
   }
 
-  if (state.path.length >= 1) {
+  // if (state.path.length >= 1) {
     if (direction == 'up') {
-      if (state.path.includes(state.currentFloor) && state.path[0] >= state.currentFloor && (state.requests.some(item => (item.floor == state.currentFloor && item.isUp)))) {
+      if (state.path.includes(state.currentFloor) && currentTarget >= state.currentFloor && (state.requests.some(item => (item.floor == state.currentFloor && item.isUp)))) {
         dispatch({type: 'CLEAN_PATH_ITEM', currentFloor: state.currentFloor});
         isNeedToTriggerDoor = true;
       }
     } else if (direction == 'down') {
-      if (state.path.includes(state.currentFloor) && state.path[0] <= state.currentFloor && (state.requests.some(item => (item.floor == state.currentFloor && item.isDown)))) {
+      if (state.path.includes(state.currentFloor) && currentTarget <= state.currentFloor && (state.requests.some(item => (item.floor == state.currentFloor && item.isDown)))) {
         dispatch({type: 'CLEAN_PATH_ITEM', currentFloor: state.currentFloor});
         isNeedToTriggerDoor = true;
       }
     }
-  }
+  // }
 
   if (isNeedToTriggerDoor) {
     return triggerDoor(dispatch);

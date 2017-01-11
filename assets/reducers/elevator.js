@@ -50,11 +50,11 @@ const elevator = (state = initialState, action) => {
     case 'CLEAN_REQUEST':
       var requests = JSON.parse(JSON.stringify(state.requests));
 
-      for (let i = 0; i < requests.length; i++) {
-        if (requests[i].floor == action.currentFloor) {
+      requests.forEach((request, i) => {
+        if (request.floor == action.currentFloor) {
           requests.splice(i, 1);
         }
-      }
+      });
 
       return Object.assign({}, state, {requests});
     case 'CLEAN_PATH_ITEM':
@@ -65,5 +65,7 @@ const elevator = (state = initialState, action) => {
       return state;
   }
 };
+
+// const cut = chunk => JSON.parse(JSON.stringify(chunk));
 
 export default elevator;
