@@ -10,7 +10,7 @@ const elevator = (state = initialState, action) => {
   console.log(action.type);
   switch (action.type) {
     case 'ADD_FLOOR_TO_PATH':
-      var path = JSON.parse(JSON.stringify(state.path));
+      var path = copy(state.path);
       path.push(action.floor);
       return Object.assign({}, state, {path});
     case 'FINISH_SEGMENT':
@@ -40,7 +40,7 @@ const elevator = (state = initialState, action) => {
         isMoving: true,
       });
     case 'REQUEST_ELEVATOR':
-      var requests = JSON.parse(JSON.stringify(state.requests));
+      var requests = copy(state.requests);
       requests.push({
         floor: action.floor,
         isUp: action.isUp,
@@ -48,7 +48,7 @@ const elevator = (state = initialState, action) => {
       });
       return Object.assign({}, state, {requests});
     case 'CLEAN_REQUEST':
-      var requests = JSON.parse(JSON.stringify(state.requests));
+      var requests = copy(state.requests);
 
       requests.forEach((request, i) => {
         if (request.floor == action.currentFloor) {
@@ -58,7 +58,7 @@ const elevator = (state = initialState, action) => {
 
       return Object.assign({}, state, {requests});
     case 'CLEAN_PATH_ITEM':
-      var path = JSON.parse(JSON.stringify(state.path));
+      var path = copy(state.path);
       path.splice(state.path.indexOf(action.currentFloor), 1);
       return Object.assign({}, state, {path});
     default:
@@ -66,6 +66,6 @@ const elevator = (state = initialState, action) => {
   }
 };
 
-// const cut = chunk => JSON.parse(JSON.stringify(chunk));
+const copy = chunk => JSON.parse(JSON.stringify(chunk));
 
 export default elevator;
