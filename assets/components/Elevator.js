@@ -61,4 +61,13 @@ const mapDispatchToProps = dispatch =>
     },
   });
 
+Elevator.propTypes = {
+  requests: React.PropTypes.array,
+  onClickRequest: React.PropTypes.func,
+  isDoorsOpened: React.PropTypes.bool,
+  path: React.PropTypes.array,
+  currentFloor: React.PropTypes.number,
+  onClick: React.PropTypes.func,
+};
+
 export default connect(mapStateToProps, mapDispatchToProps)(Elevator);

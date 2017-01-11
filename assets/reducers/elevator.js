@@ -10,7 +10,7 @@ const elevator = (state = initialState, action) => {
   console.log(action.type);
   switch (action.type) {
     case 'ADD_FLOOR_TO_PATH':
-      let path = state.path;
+      var path = JSON.parse(JSON.stringify(state.path));
       path.push(action.floor);
       return Object.assign({}, state, {path});
     case 'FINISH_SEGMENT':
@@ -35,7 +35,10 @@ const elevator = (state = initialState, action) => {
         isMoving: true,
       });
     case 'CLOSE_DOORS':
-      return Object.assign({}, state, {isDoorsOpened: false, isMoving: true});
+      return Object.assign({}, state, {
+        isDoorsOpened: false,
+        isMoving: true,
+      });
     case 'REQUEST_ELEVATOR':
       var requests = JSON.parse(JSON.stringify(state.requests));
       requests.push({
