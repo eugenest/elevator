@@ -1,8 +1,3 @@
-/**
- * 1. Предполагается, что люди, которые вызывали лифт, не дождались его и ушли.
- * 2. Лифт ходит в порядке FIFO
- */
-
 const actionDelay = 1000;
 
 const openDoor = dispatch =>
@@ -76,8 +71,6 @@ const moveOne = (direction, dispatch, getState) =>
   });
 
 const handleCabinMovement = (initialFloor, nextState, dispatch, getState) => {
-  // console.log(initialFloor, nextState.elevator.path[0], nextState.elevator.path[0] - initialFloor);
-
   const firstTargetFloor = nextState.elevator.path[0];
   let floorsToRide = Math.abs(firstTargetFloor - initialFloor);
 

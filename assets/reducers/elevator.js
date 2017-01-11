@@ -7,7 +7,6 @@ const initialState = {
 };
 
 const elevator = (state = initialState, action) => {
-  console.log(action.type);
   switch (action.type) {
     case 'ADD_FLOOR_TO_PATH':
       var path = copy(state.path);
